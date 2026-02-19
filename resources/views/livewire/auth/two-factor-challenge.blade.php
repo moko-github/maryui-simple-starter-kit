@@ -43,20 +43,23 @@
                 <div class="space-y-5 text-center">
                     <div x-show="!showRecoveryInput">
                         <div class="flex items-center justify-center my-5">
-                            <flux:otp
-                                x-model="code"
-                                length="6"
-                                name="code"
-                                label="OTP Code"
-                                label:sr-only
-                                class="mx-auto"
-                             />
+                            <div class="flex gap-2 mx-auto">
+                                <input
+                                    x-model="code"
+                                    name="code"
+                                    type="text"
+                                    maxlength="6"
+                                    placeholder="000000"
+                                    class="input input-bordered text-center text-2xl tracking-[0.5em] w-52"
+                                    autocomplete="one-time-code"
+                                />
+                            </div>
                         </div>
                     </div>
 
                     <div x-show="showRecoveryInput">
                         <div class="my-5">
-                            <flux:input
+                            <x-input
                                 type="text"
                                 name="recovery_code"
                                 x-ref="recovery_code"
@@ -67,19 +70,17 @@
                         </div>
 
                         @error('recovery_code')
-                            <flux:text color="red">
+                            <p class="text-sm text-error">
                                 {{ $message }}
-                            </flux:text>
+                            </p>
                         @enderror
                     </div>
 
-                    <flux:button
-                        variant="primary"
+                    <x-button
+                        label="{{ __('Continue') }}"
                         type="submit"
-                        class="w-full"
-                    >
-                        {{ __('Continue') }}
-                    </flux:button>
+                        class="btn-primary w-full"
+                    />
                 </div>
 
                 <div class="mt-5 space-x-0.5 text-sm leading-5 text-center">
