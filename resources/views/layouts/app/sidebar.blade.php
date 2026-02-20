@@ -1,58 +1,69 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        @include('partials.head')
-    </head>
-    <body class="min-h-screen font-sans antialiased bg-base-200">
 
-        {{-- NAVBAR mobile only --}}
-        <x-nav sticky class="lg:hidden">
-            <x-slot:brand>
+<head>
+    @include('partials.head')
+</head>
+
+<body class="min-h-screen font-sans antialiased bg-base-200">
+    {{-- NAVBAR mobile only --}}
+    <x-mary-nav sticky class="lg:hidden">
+        <x-slot:brand>
+            <a href="{{ route('dashboard') }}" class="me-5 flex items-center space-x-2 rtl:space-x-reverse"
+                wire:navigate>
                 <x-app-logo />
-            </x-slot:brand>
-            <x-slot:actions>
-                <label for="main-drawer" class="lg:hidden me-3">
-                    <x-icon name="o-bars-3" class="cursor-pointer" />
-                </label>
-            </x-slot:actions>
-        </x-nav>
+            </a>
+        </x-slot:brand>
+        <x-slot:actions>
+            <label for="main-drawer" class="lg:hidden">
+                <x-mary-icon name="o-bars-3" class="cursor-pointer" />
+            </label>
+        </x-slot:actions>
+    </x-mary-nav>
 
-        {{-- MAIN --}}
-        <x-main full-width>
-            {{-- SIDEBAR --}}
-            <x-slot:sidebar drawer="main-drawer" collapsible class="bg-base-100 lg:bg-inherit">
+    {{-- MAIN --}}
+    <x-mary-main full-width>
+        {{-- SIDEBAR --}}
+        <x-slot:sidebar drawer="main-drawer" collapsible class="bg-base-100">
 
-                {{-- BRAND --}}
-                <x-app-brand class="px-5 pt-4" />
+            {{-- BRAND --}}
+            <div class="flex justify-between items-center m-3">
+                <a href="{{ route('dashboard') }}" class="me-5 flex items-center space-x-2 rtl:space-x-reverse"
+                    wire:navigate>
+                    <x-app-logo />
+                </a>
+                <x-mary-theme-toggle />
+            </div>
 
-                {{-- MENU --}}
-                <x-menu activate-by-route>
+            {{-- USER MENU --}}
+            <div class="mx-3">
+                <x-mary-menu-separator />
+                <livewire:settings.user-menu />
+                <x-mary-menu-separator />
+            </div>
 
-                    {{-- User --}}
-                    @if($user = auth()->user())
-                        <x-menu-separator />
+            {{-- MENU --}}
+            <x-partials.menu />
+        </x-slot:sidebar>
 
-                        <x-list-item :item="$user" value="name" sub-value="email" no-separator no-hover class="-mx-2 !-my-2 rounded">
-                            <x-slot:actions>
-                                <x-button icon="o-power" class="btn-circle btn-ghost btn-xs" tooltip-left="logoff" no-wire-navigate link="/logout" />
-                            </x-slot:actions>
-                        </x-list-item>
-
-                        <x-menu-separator />
-                    @endif
-
-                    <x-menu-item title="Dashboard" icon="o-home" link="{{ route('dashboard') }}" />
-                    <x-menu-item title="{{ __('Settings') }}" icon="o-cog-6-tooth" link="{{ route('profile.edit') }}" />
-                </x-menu>
-            </x-slot:sidebar>
-
-            {{-- The `$slot` goes here --}}
-            <x-slot:content>
+        {{-- The `$slot` goes here --}}
+        <x-slot:content class="flex flex-col min-h-screen">
+            @if(config('app.demo.enabled'))
+            <x-mary-alert
+                class="alert-warning alert-soft mb-3 font-black"
+                :title="__('The data will reset every 24 hours.')"
+                icon="o-exclamation-triangle"
+                dismissible />
+            @endif
+            <div class="flex-1 flex flex-col items-stretch gap-2">
                 {{ $slot }}
-            </x-slot:content>
-        </x-main>
+            </div>
+            <x-partials.footer-info />
+        </x-slot:content>
+    </x-mary-main>
 
-        {{-- TOAST area --}}
-        <x-toast />
-    </body>
+    {{-- Toast --}}
+    <x-mary-toast />
+</body>
+
 </html>
