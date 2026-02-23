@@ -27,11 +27,11 @@ class NewAccessRequestNotification extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('📋 New Access Request - '.config('app.name'))
-            ->greeting('New Access Request Received')
-            ->line("A user has requested access to the application.")
-            ->line("**Kerberos:** `{$this->accessRequest->kerberos}`")
-            ->line("**Justification:** {$this->accessRequest->justification}")
+            ->subject('📋 Nouvelle demande d\'accès - '.config('app.name'))
+            ->greeting('Nouvelle demande d\'accès reçue')
+            ->line("Un utilisateur a demandé l'accès à l'application.")
+            ->line("**Kerberos :** `{$this->accessRequest->kerberos}`")
+            ->line("**Justification :** {$this->accessRequest->justification}")
             ->salutation('— '.config('app.name'));
     }
 

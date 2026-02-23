@@ -6,8 +6,8 @@
                     <div class="flex items-center gap-3">
                         <x-mary-icon name="o-exclamation-triangle" class="w-6 h-6 text-warning flex-shrink-0" />
                         <div>
-                            <h3 class="font-semibold text-base-content">⚠️ Development Mode</h3>
-                            <p class="text-sm text-base-content/70">Kerberos simulation active ({{ app()->environment() }} environment)</p>
+                            <h3 class="font-semibold text-base-content">⚠️ Mode Développement</h3>
+                            <p class="text-sm text-base-content/70">Simulation Kerberos active (environnement {{ app()->environment() }})</p>
                         </div>
                     </div>
 
@@ -17,13 +17,13 @@
                                 <div class="flex items-center gap-2 flex-1">
                                     <x-mary-icon name="o-check-circle" class="w-5 h-5 text-success flex-shrink-0" />
                                     <div class="flex-1">
-                                        <p class="text-sm font-medium text-base-content">Simulation active</p>
+                                        <p class="text-sm font-medium text-base-content">Simulation en cours</p>
                                         <p class="text-xs font-mono text-base-content/70 break-all">{{ $currentSimulation }}</p>
                                     </div>
                                 </div>
                                 <x-mary-button
                                     wire:click="disable"
-                                    label="Disable"
+                                    label="Désactiver"
                                     class="btn-sm btn-error"
                                     icon="o-x-mark"
                                     spinner="disable"
@@ -32,34 +32,34 @@
                         </div>
                     @else
                         <div class="flex flex-col gap-3">
-                            <div class="divider my-0 text-xs text-base-content/50">Enable simulation</div>
+                            <div class="divider my-0 text-xs text-base-content/50">Activer la simulation</div>
 
                             <x-mary-input
                                 wire:model="customKerberos"
                                 name="customKerberos"
-                                label="Custom Kerberos identifier"
-                                placeholder="firstname.lastname@example.com"
+                                label="Identifiant Kerberos personnalisé"
+                                placeholder="prenom.nom@exemple.fr"
                                 icon="o-pencil"
-                                hint="Enter any Kerberos identifier"
+                                hint="Saisissez n'importe quel identifiant Kerberos"
                             />
 
-                            <div class="text-center text-xs text-base-content/50">or</div>
+                            <div class="text-center text-xs text-base-content/50">ou</div>
 
                             <x-mary-select
                                 wire:model="selectedKerberos"
                                 name="selectedKerberos"
-                                label="Select an existing user"
+                                label="Sélectionner un utilisateur existant"
                                 :options="$this->availableKerberos"
                                 option-label="kerberos"
                                 option-value="kerberos"
-                                placeholder="Choose an existing Kerberos..."
+                                placeholder="Choisir un identifiant existant..."
                                 icon="o-users"
-                                hint="First 10 identifiers from the database"
+                                hint="Les 10 premiers identifiants de la base de données"
                             />
 
                             <x-mary-button
                                 wire:click="simulate"
-                                label="Simulate login"
+                                label="Simuler la connexion"
                                 class="btn-warning w-full"
                                 icon="o-play"
                                 spinner="simulate"
@@ -71,7 +71,7 @@
                         <div class="flex items-start gap-2">
                             <x-mary-icon name="o-shield-exclamation" class="w-5 h-5 text-error flex-shrink-0 mt-0.5" />
                             <p class="text-xs text-base-content/70">
-                                <strong>Warning:</strong> This simulation mode is <strong>strictly reserved for development and staging environments</strong>. It is automatically disabled in production.
+                                <strong>Attention :</strong> Ce mode de simulation est <strong>strictement réservé aux environnements de développement et de pré-production</strong>. Il est automatiquement désactivé en production.
                             </p>
                         </div>
                     </div>

@@ -27,12 +27,12 @@ class AccessRequestRejectedNotification extends Notification implements ShouldQu
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('❌ Access Request Rejected - '.config('app.name'))
+            ->subject('❌ Demande d\'accès refusée - '.config('app.name'))
             ->error()
-            ->greeting('Your access request has been rejected.')
-            ->line("Reason: {$this->adminMessage}")
-            ->line('You may submit a new request with additional justification if needed.')
-            ->action('Submit a new request', route('access-request.create'))
+            ->greeting('Votre demande d\'accès a été refusée.')
+            ->line("Motif : {$this->adminMessage}")
+            ->line('Vous pouvez soumettre une nouvelle demande avec une justification complémentaire si nécessaire.')
+            ->action('Soumettre une nouvelle demande', route('access-request.create'))
             ->salutation('— '.config('app.name'));
     }
 }

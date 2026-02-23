@@ -1,66 +1,66 @@
-# Installation Guide
+# Guide d'installation
 
-## Quick Start
+## Démarrage rapide
 
 ```bash
-composer create-project moko-github/maryui-simple-starter-kit my-app
-cd my-app
+composer create-project moko-github/maryui-simple-starter-kit mon-app
+cd mon-app
 npm install && npm run build
 ```
 
-The installer will ask you a few questions to configure optional modules.
+Le programme d'installation vous posera quelques questions pour configurer les modules optionnels.
 
 ---
 
-## Optional Modules
+## Modules optionnels
 
-### Kerberos Authentication (SSO)
+### Authentification Kerberos (SSO)
 
-When prompted during installation, you can enable Kerberos Single Sign-On support.
+Lors de l'installation, vous pouvez activer le support de la connexion unique (Single Sign-On) via Kerberos.
 
-**What the installer does automatically:**
+**Ce que fait l'installateur automatiquement :**
 
-- Copies the Kerberos module files (models, services, middleware, Livewire components, migrations)
-- Registers the `KerberosAuthentication` middleware in `bootstrap/app.php`
-- Adds `kerberos` and `role_id` fields to the `User` model
-- Injects the simulation widget into the login page
-- Adds Kerberos routes (`/access-request`, `/access-denied`)
-- Schedules the daily cleanup of authentication logs
-- Appends Kerberos variables to your `.env` file
-- Runs migrations and seeds the roles table (`Admin`, `User`)
+- Copie les fichiers du module Kerberos (modèles, services, middleware, composants Livewire, migrations)
+- Enregistre le middleware `KerberosAuthentication` dans `bootstrap/app.php`
+- Ajoute les champs `kerberos` et `role_id` au modèle `User`
+- Injecte le widget de simulation dans la page de connexion
+- Ajoute les routes Kerberos (`/demande-acces`, `/acces-refuse`)
+- Planifie le nettoyage quotidien des journaux d'authentification
+- Ajoute les variables Kerberos dans votre fichier `.env`
+- Exécute les migrations et initialise la table des rôles (`Admin`, `User`)
 
-**After installation, configure your `.env`:**
+**Après l'installation, configurez votre `.env` :**
 
 ```env
-# Enable Kerberos (set to true in production)
+# Activer Kerberos (mettre à true en production)
 KERBEROS_ENABLED=true
 
-# Admin email addresses for notifications (comma-separated)
-KERBEROS_ADMIN_EMAILS=admin@example.com,admin2@example.com
+# Adresses email des administrateurs pour les notifications (séparées par des virgules)
+KERBEROS_ADMIN_EMAILS=admin@exemple.fr,admin2@exemple.fr
 
-# For local development, enable the simulation widget
+# Pour le développement local, activer le widget de simulation
 KERBEROS_SIMULATION_MODE=true
 ```
 
-**The 4 authentication scenarios:**
+**Les 4 scénarios d'authentification :**
 
-| Scenario | Condition | Result |
-|----------|-----------|--------|
-| **Success** | `REMOTE_USER` matches a user with a role | Automatic login |
-| **No role** | `REMOTE_USER` matches a user without a role | Access request form |
-| **Unknown** | `REMOTE_USER` not found in database | Access denied + admin notification |
-| **No Kerberos** | `REMOTE_USER` is empty | Standard login form |
+| Scénario | Condition | Résultat |
+|----------|-----------|----------|
+| **Succès** | `REMOTE_USER` correspond à un utilisateur avec un rôle | Connexion automatique |
+| **Sans rôle** | `REMOTE_USER` correspond à un utilisateur sans rôle | Formulaire de demande d'accès |
+| **Inconnu** | `REMOTE_USER` introuvable en base de données | Accès refusé + notification admin |
+| **Sans Kerberos** | `REMOTE_USER` est vide | Formulaire de connexion classique |
 
-**Web server configuration (Apache example):**
+**Configuration du serveur web (exemple Apache) :**
 
 ```apache
 <VirtualHost *:443>
-    ServerName myapp.example.com
+    ServerName monapp.exemple.fr
 
     <Location />
         AuthType Kerberos
-        AuthName "Kerberos Login"
-        KrbAuthRealm EXAMPLE.COM
+        AuthName "Connexion Kerberos"
+        KrbAuthRealm EXEMPLE.FR
         Krb5Keytab /etc/apache2/http.keytab
         KrbMethodNegotiate On
         KrbMethodK5Passwd Off
@@ -69,16 +69,16 @@ KERBEROS_SIMULATION_MODE=true
 </VirtualHost>
 ```
 
-**Nginx example:**
+**Exemple Nginx :**
 
 ```nginx
 server {
     listen 443 ssl;
-    server_name myapp.example.com;
+    server_name monapp.exemple.fr;
 
     location / {
         auth_gss on;
-        auth_gss_realm EXAMPLE.COM;
+        auth_gss_realm EXEMPLE.FR;
         auth_gss_keytab /etc/nginx/http.keytab;
         auth_gss_service_name HTTP;
     }
@@ -87,9 +87,9 @@ server {
 
 ---
 
-## Running the installer manually
+## Relancer l'installateur manuellement
 
-If you skipped a module during installation, you can re-run the installer:
+Si vous avez ignoré un module lors de l'installation, vous pouvez relancer l'installateur :
 
 ```bash
 php artisan app:install
@@ -97,15 +97,15 @@ php artisan app:install
 
 ---
 
-## Development
+## Développement
 
 ```bash
-# Start the development server
+# Démarrer le serveur de développement
 composer run dev
 
-# Run tests
+# Lancer les tests
 php artisan test
 
-# Code formatting
+# Formatage du code
 vendor/bin/pint
 ```

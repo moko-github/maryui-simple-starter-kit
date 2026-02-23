@@ -2,8 +2,8 @@
     @if ($submitted)
         <div class="flex flex-col gap-6">
             <x-auth-header
-                :title="__('Access request sent')"
-                :description="__('Your request has been forwarded to the administrators')"
+                :title="__('Demande d\'accès envoyée')"
+                :description="__('Votre demande a été transmise aux administrateurs')"
             />
 
             <x-mary-card class="bg-success/10 border-success">
@@ -14,16 +14,16 @@
 
                     <div class="flex flex-col gap-2">
                         <p class="text-base-content/90">
-                            Your access request has been successfully sent to the administrators.
+                            Votre demande d'accès a bien été envoyée aux administrateurs.
                         </p>
                         <p class="text-sm text-base-content/70">
-                            You will be notified by email once your request has been processed.
+                            Vous serez notifié par email dès que votre demande aura été traitée.
                         </p>
                     </div>
 
                     <div class="mt-4">
                         <x-mary-button
-                            label="Back to login"
+                            label="Retour à la connexion"
                             link="{{ route('login') }}"
                             class="btn-primary"
                             icon="o-arrow-left"
@@ -35,17 +35,17 @@
     @else
         <div class="flex flex-col gap-6">
             <x-auth-header
-                :title="__('Access request')"
-                :description="__('Your account does not have a role assigned yet. Please fill in this form.')"
+                :title="__('Demande d\'accès')"
+                :description="__('Votre compte n\'a pas encore de rôle attribué. Veuillez remplir ce formulaire.')"
             />
 
             <x-mary-card class="bg-warning/10 border-warning">
                 <div class="flex items-start gap-3">
                     <x-mary-icon name="o-exclamation-triangle" class="w-6 h-6 text-warning flex-shrink-0 mt-1" />
                     <div class="flex flex-col gap-1">
-                        <p class="font-medium text-base-content">Account without role</p>
+                        <p class="font-medium text-base-content">Compte sans rôle</p>
                         <p class="text-sm text-base-content/70">
-                            Your Kerberos identifier <strong>{{ $kerberos }}</strong> is recognized, but your account has no role assigned. Please justify your access request below.
+                            Votre identifiant Kerberos <strong>{{ $kerberos }}</strong> est reconnu, mais votre compte n'a aucun rôle attribué. Veuillez justifier votre demande d'accès ci-dessous.
                         </p>
                     </div>
                 </div>
@@ -55,27 +55,27 @@
                 <x-mary-input
                     wire:model="kerberos"
                     name="kerberos"
-                    label="Kerberos identifier"
+                    label="Identifiant Kerberos"
                     readonly
                     icon="o-identification"
-                    hint="Your Kerberos identifier detected automatically"
+                    hint="Votre identifiant Kerberos détecté automatiquement"
                 />
 
                 <x-mary-textarea
                     wire:model="justification"
                     name="justification"
-                    label="Justification for your request"
-                    placeholder="Explain why you need access to the application (minimum 20 characters)..."
+                    label="Justification de votre demande"
+                    placeholder="Expliquez pourquoi vous avez besoin d'accéder à l'application (minimum 20 caractères)..."
                     rows="5"
                     required
-                    hint="Minimum 20 characters, maximum 500 characters"
+                    hint="Minimum 20 caractères, maximum 500 caractères"
                 />
 
                 <div class="text-sm text-base-content/70 bg-info/10 rounded-lg p-4 border border-info/20">
                     <div class="flex items-start gap-2">
                         <x-mary-icon name="o-information-circle" class="w-5 h-5 text-info flex-shrink-0 mt-0.5" />
                         <p>
-                            Administrators will receive your request by email and you will be notified once it is processed.
+                            Les administrateurs recevront votre demande par email et vous serez notifié une fois celle-ci traitée.
                         </p>
                     </div>
                 </div>
@@ -83,14 +83,14 @@
                 <div class="flex flex-col gap-3">
                     <x-mary-button
                         type="submit"
-                        label="Send access request"
+                        label="Envoyer la demande d'accès"
                         class="btn-primary w-full"
                         icon="o-paper-airplane"
                         spinner="submit"
                     />
 
                     <x-mary-button
-                        label="Back to login"
+                        label="Retour à la connexion"
                         link="{{ route('login') }}"
                         class="btn-ghost w-full"
                         icon="o-arrow-left"

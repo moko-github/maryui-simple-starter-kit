@@ -14,15 +14,15 @@ class InstallCommand extends Command
 {
     protected $signature = 'app:install';
 
-    protected $description = 'Interactive installer for the application';
+    protected $description = "Programme d'installation interactif de l'application";
 
     public function handle(): int
     {
-        intro('Welcome to the Application Installer');
+        intro("Bienvenue dans le programme d'installation");
 
         $this->installKerberos();
 
-        outro('Installation complete! Your application is ready.');
+        outro("Installation terminée ! Votre application est prête.");
 
         return self::SUCCESS;
     }
@@ -30,16 +30,16 @@ class InstallCommand extends Command
     protected function installKerberos(): void
     {
         $install = confirm(
-            label: 'Do you want Kerberos authentication (SSO) support?',
+            label: "Voulez-vous activer l'authentification Kerberos (SSO) ?",
             default: false,
-            hint: 'Enables Single Sign-On via the REMOTE_USER server variable (requires Apache/Nginx Kerberos module).'
+            hint: "Active la connexion unique via la variable serveur REMOTE_USER (nécessite le module Kerberos Apache/Nginx)."
         );
 
         if (! $install) {
             return;
         }
 
-        note('Installing Kerberos authentication module...');
+        note("Installation du module d'authentification Kerberos...");
 
         $this->publishStubs();
         $this->configureMiddleware();
@@ -50,14 +50,14 @@ class InstallCommand extends Command
         $this->appendEnvVariables();
         $this->runKerberosMigrations();
 
-        $this->info('✓ Kerberos authentication installed successfully.');
+        $this->info('✓ Authentification Kerberos installée avec succès.');
 
         note(
-            "Next steps:\n".
-            "  1. Set KERBEROS_ENABLED=true in your .env file\n".
-            "  2. Configure KERBEROS_ADMIN_EMAILS with admin email addresses\n".
-            "  3. Configure your web server (Apache/Nginx) with the Kerberos module\n".
-            "  4. For local testing, set KERBEROS_SIMULATION_MODE=true"
+            "Prochaines étapes :\n".
+            "  1. Définissez KERBEROS_ENABLED=true dans votre fichier .env\n".
+            "  2. Configurez KERBEROS_ADMIN_EMAILS avec les adresses email des administrateurs\n".
+            "  3. Configurez votre serveur web (Apache/Nginx) avec le module Kerberos\n".
+            "  4. Pour les tests en local, définissez KERBEROS_SIMULATION_MODE=true"
         );
     }
 
@@ -122,7 +122,7 @@ class InstallCommand extends Command
     {
         $routesFile = base_path('routes/web.php');
 
-        $kerberosRoutes = "\n\n// Kerberos authentication routes\nRoute::middleware('guest')->group(function (): void {\n    Route::get('/access-request', \\App\\Livewire\\Auth\\RequestAccess::class)->name('access-request.create');\n    Route::get('/access-denied', \\App\\Livewire\\Auth\\AccessDenied::class)->name('access-denied');\n});\n";
+        $kerberosRoutes = "\n\n// Routes d'authentification Kerberos\nRoute::middleware('guest')->group(function (): void {\n    Route::get('/demande-acces', \\App\\Livewire\\Auth\\RequestAccess::class)->name('access-request.create');\n    Route::get('/acces-refuse', \\App\\Livewire\\Auth\\AccessDenied::class)->name('access-denied');\n});\n";
 
         File::append($routesFile, $kerberosRoutes);
     }

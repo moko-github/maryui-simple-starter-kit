@@ -29,14 +29,14 @@ class AccessRequestAcceptedNotification extends Notification implements ShouldQu
         $roleName = $this->accessRequest->processedBy?->role?->name ?? 'User';
 
         $mail = (new MailMessage)
-            ->subject('✅ Access Request Approved - '.config('app.name'))
+            ->subject('✅ Demande d\'accès approuvée - '.config('app.name'))
             ->success()
-            ->greeting('Your access request has been approved!')
-            ->line("Role assigned: **{$roleName}**")
-            ->action('Log in now', route('login'));
+            ->greeting('Votre demande d\'accès a été approuvée !')
+            ->line("Rôle attribué : **{$roleName}**")
+            ->action('Se connecter', route('login'));
 
         if ($this->adminMessage) {
-            $mail->line("Message from the administrator: {$this->adminMessage}");
+            $mail->line("Message de l'administrateur : {$this->adminMessage}");
         }
 
         return $mail->salutation('— '.config('app.name'));

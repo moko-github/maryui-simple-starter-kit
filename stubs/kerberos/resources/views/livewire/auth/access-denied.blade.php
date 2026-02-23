@@ -1,8 +1,8 @@
 <div>
     <div class="flex flex-col gap-6">
         <x-auth-header
-            :title="__('Access denied')"
-            :description="__('Your Kerberos identifier is not recognized')"
+            :title="__('Accès refusé')"
+            :description="__('Votre identifiant Kerberos n\'est pas reconnu')"
         />
 
         <x-mary-card class="bg-error/10 border-error">
@@ -11,9 +11,9 @@
                     <x-mary-icon name="o-shield-exclamation" class="w-8 h-8 text-error flex-shrink-0 mt-1" />
                     <div class="flex flex-col gap-3">
                         <div>
-                            <p class="font-semibold text-lg text-base-content">Identifier not recognized</p>
+                            <p class="font-semibold text-lg text-base-content">Identifiant non reconnu</p>
                             <p class="text-sm text-base-content/70 mt-1">
-                                The following Kerberos identifier is not registered in our system:
+                                L'identifiant Kerberos suivant n'est pas enregistré dans notre système :
                             </p>
                         </div>
 
@@ -25,7 +25,7 @@
                             <div class="flex items-start gap-2">
                                 <x-mary-icon name="o-information-circle" class="w-5 h-5 text-info flex-shrink-0 mt-0.5" />
                                 <p class="text-sm text-base-content/70">
-                                    Administrators have been automatically notified of this login attempt. If you think this is an error, please contact your IT department.
+                                    Les administrateurs ont été automatiquement notifiés de cette tentative de connexion. Si vous pensez qu'il s'agit d'une erreur, veuillez contacter votre service informatique.
                                 </p>
                             </div>
                         </div>
@@ -35,11 +35,11 @@
                 <div class="divider my-2"></div>
 
                 <div class="flex flex-col gap-2">
-                    <p class="text-sm font-medium text-base-content">What to do next?</p>
+                    <p class="text-sm font-medium text-base-content">Que faire ?</p>
                     <ul class="list-disc list-inside text-sm text-base-content/70 space-y-1 ml-2">
-                        <li>Make sure you are connected to the corporate network</li>
-                        <li>Contact your IT department to verify your account</li>
-                        <li>Use the classic login form if you have a local account</li>
+                        <li>Assurez-vous d'être connecté au réseau de l'entreprise</li>
+                        <li>Contactez votre service informatique pour vérifier votre compte</li>
+                        <li>Utilisez le formulaire de connexion classique si vous disposez d'un compte local</li>
                     </ul>
                 </div>
             </div>
@@ -48,14 +48,14 @@
         <div class="flex flex-col gap-3">
             <x-mary-button
                 wire:click="backToLogin"
-                label="Back to login page"
+                label="Retour à la page de connexion"
                 class="btn-primary w-full"
                 icon="o-arrow-left"
             />
 
             <div class="text-center">
                 <p class="text-xs text-base-content/50">
-                    Attempt time: {{ now()->format('d/m/Y at H:i:s') }}
+                    Tentative le {{ now()->format('d/m/Y à H:i:s') }}
                 </p>
             </div>
         </div>

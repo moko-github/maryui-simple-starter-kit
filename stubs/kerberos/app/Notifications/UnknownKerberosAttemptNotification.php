@@ -31,15 +31,15 @@ class UnknownKerberosAttemptNotification extends Notification implements ShouldQ
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('⚠️ Unknown Kerberos Login Attempt - '.config('app.name'))
+            ->subject('⚠️ Tentative de connexion Kerberos inconnue - '.config('app.name'))
             ->error()
-            ->greeting('Unknown Kerberos Identifier Detected')
-            ->line("An authentication attempt was made with an unrecognised Kerberos identifier.")
-            ->line("**Identifier:** `{$this->kerberos}`")
-            ->line("**IP Address:** {$this->ipAddress}")
-            ->line("**Browser:** {$this->userAgent}")
-            ->line("**Date/Time:** {$this->attemptedAt->format('d/m/Y H:i:s')}")
-            ->line('If this is a legitimate user, add their Kerberos identifier to the system.')
+            ->greeting('Identifiant Kerberos non reconnu détecté')
+            ->line("Une tentative d'authentification a été effectuée avec un identifiant Kerberos inconnu.")
+            ->line("**Identifiant :** `{$this->kerberos}`")
+            ->line("**Adresse IP :** {$this->ipAddress}")
+            ->line("**Navigateur :** {$this->userAgent}")
+            ->line("**Date/Heure :** {$this->attemptedAt->format('d/m/Y H:i:s')}")
+            ->line("S'il s'agit d'un utilisateur légitime, ajoutez son identifiant Kerberos dans le système.")
             ->salutation('— '.config('app.name'));
     }
 }
