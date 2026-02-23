@@ -22,7 +22,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::livewire('settings/password', 'pages::settings.password')
         // ->can('profile.password')
         ->name('settings.password');
-
+    Route::prefix('users')->name('users.')->group(function () {
+        Route::livewire('/', 'pages::users.index')
+            // ->can('viewAny', User::class)
+            ->name('index');
+        Route::livewire('/index2', 'pages::users.index2')
+            // ->can('viewAny', User::class)
+            ->name('index2');
+        Route::livewire('/create', 'pages::users.create')
+            // ->can('create', User::class)
+            ->name('create');
+        Route::livewire('/{user}/edit', 'pages::users.edit')
+            // ->can('view', 'user')
+            ->name('edit');
+    });
 });
 
 require __DIR__.'/auth.php';

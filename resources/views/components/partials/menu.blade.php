@@ -3,7 +3,8 @@
     <x-mary-menu-item title="Dashboard" icon="m-rectangle-group" :link="route('dashboard')" />
     {{-- @endcan --}}
 
-    @can('user.list')
+    {{-- @can('user.list') --}}
+    <x-mary-menu-item title="Users" icon="s-users" :link="route('users.index2')" />
     <x-mary-menu-item title="Users" icon="s-users" :link="route('users.index')" />
-    @endcan
+    {{-- @endcan --}}
 </x-mary-menu>
