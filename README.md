@@ -72,15 +72,47 @@ php artisan app:install
 
 L'installateur copie les fichiers nécessaires, configure le middleware et les routes, ajoute les variables d'environnement et exécute les migrations.
 
-### Configuration `.env`
+### Variables d'environnement
+
+| Variable | Défaut | Description |
+|----------|--------|-------------|
+| `KERBEROS_ENABLED` | `false` | Active/désactive l'authentification Kerberos globalement |
+| `KERBEROS_SERVER_VAR` | `REMOTE_USER` | Nom de la variable serveur contenant l'identifiant Kerberos |
+| `KERBEROS_FALLBACK_AUTH` | `true` | Autorise le formulaire login/password si Kerberos est indisponible |
+| `KERBEROS_SIMULATION_MODE` | `false` | Active le widget de simulation en local (ignoré si `APP_ENV=production`) |
+| `KERBEROS_ADMIN_EMAILS` | *(vide)* | Emails des admins notifiés (vide = tous les admins en BDD) |
+| `KERBEROS_AUTO_CLEANUP_DAYS` | `30` | Rétention des tentatives de connexion en jours |
+| `KERBEROS_ALLOWED_DOMAINS` | *(vide)* | Whitelist des domaines Kerberos acceptés (vide = tous) |
+| `KERBEROS_ADMIN_NOTIFICATION_MODE` | `immediate` | Mode de notification : `immediate`, `digest` ou `disabled` |
+
+**Fichier `.env` complet par environnement :**
+
+<details>
+<summary>Local (développement)</summary>
 
 ```env
 KERBEROS_ENABLED=true
-KERBEROS_ADMIN_EMAILS=admin@exemple.fr,admin2@exemple.fr
-
-# Pour les tests en local
 KERBEROS_SIMULATION_MODE=true
+KERBEROS_FALLBACK_AUTH=true
+KERBEROS_AUTO_CLEANUP_DAYS=7
+KERBEROS_ADMIN_NOTIFICATION_MODE=disabled
 ```
+</details>
+
+<details>
+<summary>Production</summary>
+
+```env
+KERBEROS_ENABLED=true
+KERBEROS_SERVER_VAR=REMOTE_USER
+KERBEROS_FALLBACK_AUTH=true
+KERBEROS_SIMULATION_MODE=false
+KERBEROS_ADMIN_EMAILS=security@exemple.fr,admin@exemple.fr
+KERBEROS_AUTO_CLEANUP_DAYS=30
+KERBEROS_ALLOWED_DOMAINS=corp.exemple.fr
+KERBEROS_ADMIN_NOTIFICATION_MODE=immediate
+```
+</details>
 
 ### Scénarios d'authentification
 
