@@ -36,6 +36,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
             // ->can('view', 'user')
             ->name('edit');
     });
+
+    Route::prefix('mfc-users')->name('mfc-users.')->group(function () {
+        Route::livewire('/', 'pages::mfc-users.index')->name('index');
+        Route::livewire('/create', 'pages::mfc-users.create')->name('create');
+        Route::livewire('/{user}/edit', 'pages::mfc-users.edit')->name('edit');
+    });
 });
 
 require __DIR__.'/auth.php';
