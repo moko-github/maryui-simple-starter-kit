@@ -1,8 +1,8 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/livewire-starter-kit",
+    "name": "moko-github/maryui-simple-starter-kit",
     "type": "project",
-    "description": "The official Laravel starter kit for Livewire.",
+    "description": "Un starter kit Laravel léger basé sur [Mary UI](https://mary-ui.com), inspiré de [mary-ui-starter-kit](https://github.com/lauroguedes/mary-ui-starter-kit), simplifié pour une intégration sans `laravel-permission` et avec un module optionnel d'authentification Kerberos (SSO).",
     "keywords": [
         "laravel",
         "framework"
@@ -18,6 +18,7 @@
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
+        "fruitcake/laravel-debugbar": "^4.0",
         "laravel/boost": "^2.1",
         "laravel/pail": "^1.2.2",
         "laravel/pint": "^1.24",
@@ -76,7 +77,8 @@
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi",
             "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
-            "@php artisan migrate --graceful --ansi"
+            "@php artisan migrate --graceful --ansi",
+            "@php artisan app:install"
         ],
         "pre-package-uninstall": [
             "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall"
