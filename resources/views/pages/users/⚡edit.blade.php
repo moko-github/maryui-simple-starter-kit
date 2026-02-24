@@ -52,15 +52,7 @@ new class extends Component {
         $this->fill($this->user);
 
         if ($this->supportsRoles()) {
-            $this->rolesGiven = $this->user
-                ->roles()
-                ->pluck('id')
-                ->toArray();
-
-            $this->permissionsGiven = $this->user
-                ->permissions()
-                ->pluck('id')
-                ->toArray();
+            $this->rolesGiven = $this->user->role_id ? [$this->user->role_id] : [];
         }
 
         $this->statusOptions = UserStatus::all();
@@ -68,7 +60,7 @@ new class extends Component {
 
     private function supportsRoles(): bool
     {
-        return class_exists(\Spatie\Permission\Models\Role::class)
+        return class_exists(\App\Models\Role::class)
             && Schema::hasTable('roles');
     }
 
@@ -97,11 +89,8 @@ new class extends Component {
         $this->user->update(Arr::except($validated, ['rolesGiven', 'permissionsGiven']));
 
         if ($this->supportsRoles() && auth()->user()->can('assignRole', $this->user)) {
-            $this->user->syncRoles($this->rolesGiven);
-        }
-
-        if ($this->supportsRoles() && auth()->user()->can('managePermissions', $this->user)) {
-            $this->user->syncPermissions($this->permissionsGiven);
+            $this->user->role_id = $this->rolesGiven[0] ?? null;
+            $this->user->save();
         }
 
         $this->success(__('User updated with success.'), redirectTo: route('users.index'));
@@ -129,9 +118,7 @@ new class extends Component {
     #[Computed]
     public function rowDecoration(): array
     {
-        return [
-            'bg-warning/20' => fn($role) => $role->name === 'super-admin',
-        ];
+        return [];
     }
 
     public function roles(): LengthAwarePaginator
@@ -140,7 +127,7 @@ new class extends Component {
             return new LengthAwarePaginator([], 0, 10);
         }
 
-        return \Spatie\Permission\Models\Role::query()
+        return \App\Models\Role::query()
             ->when($this->searchRole, fn(Builder $q) => $q->where('name', 'like', "%$this->searchRole%"))
             ->paginate(10);
     }

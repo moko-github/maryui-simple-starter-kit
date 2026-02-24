@@ -47,16 +47,14 @@ new class extends Component {
 
     private function supportsRoles(): bool
     {
-        return class_exists(\Spatie\Permission\Models\Role::class)
+        return class_exists(\App\Models\Role::class)
             && Schema::hasTable('roles');
     }
 
     #[Computed]
     public function rowDecoration(): array
     {
-        return [
-            'bg-warning/20' => fn($role) => $role->name === 'super-admin',
-        ];
+        return [];
     }
 
     public function save(): void
@@ -76,7 +74,8 @@ new class extends Component {
             $this->authorize('assignRole', $user);
 
             if ($this->supportsRoles()) {
-                $user->assignRole($this->rolesGiven);
+                $user->role_id = $this->rolesGiven[0] ?? null;
+                $user->save();
             }
         }
 
@@ -101,7 +100,7 @@ new class extends Component {
             return new LengthAwarePaginator([], 0, 10);
         }
 
-        return \Spatie\Permission\Models\Role::query()
+        return \App\Models\Role::query()
             ->when($this->searchRole, fn(Builder $q) => $q->where('name', 'like', "%$this->searchRole%"))
             ->paginate(10);
     }
