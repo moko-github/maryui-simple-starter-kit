@@ -4,7 +4,7 @@
     {{-- @endcan --}}
 
     {{-- @can('user.list') --}}
-    <x-mary-menu-item title="Users" icon="s-users" :link="route('users.index2')" />
+    <x-mary-menu-item title="Users (single-file)" icon="s-users" :link="route('users.index2')" />
     <x-mary-menu-item title="Users" icon="s-users" :link="route('users.index')" />
     {{-- @endcan --}}
 </x-mary-menu>

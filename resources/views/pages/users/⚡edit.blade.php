@@ -4,7 +4,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Schema;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 use App\Models\User;
@@ -14,8 +14,6 @@ use Illuminate\Validation\Rule;
 use Livewire\Attributes\Validate;
 use Livewire\WithFileUploads;
 use App\Enums\UserStatus;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 
 new class extends Component {
     use Toast, WithFileUploads, WithPagination;
@@ -53,17 +51,25 @@ new class extends Component {
 
         $this->fill($this->user);
 
-        $this->rolesGiven = $this->user
-            ->roles()
-            ->pluck('id')
-            ->toArray();
+        if ($this->supportsRoles()) {
+            $this->rolesGiven = $this->user
+                ->roles()
+                ->pluck('id')
+                ->toArray();
 
-        $this->permissionsGiven = $this->user
-            ->permissions()
-            ->pluck('id')
-            ->toArray();
+            $this->permissionsGiven = $this->user
+                ->permissions()
+                ->pluck('id')
+                ->toArray();
+        }
 
         $this->statusOptions = UserStatus::all();
+    }
+
+    private function supportsRoles(): bool
+    {
+        return class_exists(\Spatie\Permission\Models\Role::class)
+            && Schema::hasTable('roles');
     }
 
     protected function rules(): array
@@ -90,11 +96,11 @@ new class extends Component {
 
         $this->user->update(Arr::except($validated, ['rolesGiven', 'permissionsGiven']));
 
-        if (auth()->user()->can('role.assign')) {
+        if ($this->supportsRoles() && auth()->user()->can('assignRole', $this->user)) {
             $this->user->syncRoles($this->rolesGiven);
         }
 
-        if (auth()->user()->can('permission.assign')) {
+        if ($this->supportsRoles() && auth()->user()->can('managePermissions', $this->user)) {
             $this->user->syncPermissions($this->permissionsGiven);
         }
 
@@ -124,22 +130,28 @@ new class extends Component {
     public function rowDecoration(): array
     {
         return [
-            'bg-warning/20' => fn(Role $role) => $role->name === 'super-admin',
+            'bg-warning/20' => fn($role) => $role->name === 'super-admin',
         ];
     }
 
     public function roles(): LengthAwarePaginator
     {
-        return Role::query()
+        if (!$this->supportsRoles()) {
+            return new LengthAwarePaginator([], 0, 10);
+        }
+
+        return \Spatie\Permission\Models\Role::query()
             ->when($this->searchRole, fn(Builder $q) => $q->where('name', 'like', "%$this->searchRole%"))
-            ->when(!auth()->user()->hasRole('super-admin'), fn(Builder $q) => $q->where('name', '!=', 'super-admin')
-            )
             ->paginate(10);
     }
 
     public function permissions(): LengthAwarePaginator
     {
-        return Permission::query()
+        if (!$this->supportsRoles()) {
+            return new LengthAwarePaginator([], 0, 10);
+        }
+
+        return \Spatie\Permission\Models\Permission::query()
             ->when($this->searchPermission, fn(Builder $q) => $q->where('name', 'like', "%$this->searchPermission%"))
             ->paginate(10);
     }
@@ -163,11 +175,12 @@ new class extends Component {
     public function with(): array
     {
         $data = [
-            'roles' => $this->roles(),
+            'supportsRoles' => $this->supportsRoles(),
+            'roles' => $this->supportsRoles() ? $this->roles() : new LengthAwarePaginator([], 0, 10),
             'headersRole' => $this->headersRole(),
         ];
 
-        if (auth()->user()->hasRole('super-admin')) {
+        if ($this->supportsRoles() && auth()->user()->can('managePermissions', $this->user)) {
             $data = array_merge($data, [
                 'permissions' => $this->permissions(),
                 'headersPermission' => $this->headersPermission(),
@@ -197,7 +210,7 @@ new class extends Component {
     <x-slot:content>
         <div class="grid gap-5 lg:grid-cols-2">
             <x-mary-form wire:submit="save">
-                @can('user.manage-avatar')
+                @can('update', $user)
                     <div class="indicator">
                     <span @class([
                         'indicator-item status',
@@ -213,7 +226,7 @@ new class extends Component {
 
                 <x-mary-input :label="__('Name')" wire:model="name"/>
                 <x-mary-input :disabled="auth()->user()->cannot('manageStatus', $user)" :label="__('Email')" wire:model="email"/>
-                @can('user.manage-status')
+                @can('manageStatus', $user)
                     <x-mary-group :disabled="auth()->user()->cannot('manageStatus', $user)" :label="__('Status')" wire:model="status" :options="$statusOptions"
                                   class="[&:checked]:!btn-primary"/>
                 @endcan
@@ -225,32 +238,32 @@ new class extends Component {
                 </x-slot:actions>
             </x-mary-form>
             <div class="hidden lg:block place-self-center w-full">
-                @unlessrole('super-admin')
-                @can('assignRole', $user)
-                    <div class="m-3">
-                        <x-partials.header-title :separator="true" :heading="__('Roles')"/>
-                        @can('role.search')
-                            <x-mary-input class="input-sm" :placeholder="__('Search...')"
-                                          wire:model.live.debounce="searchRole" clearable
-                                          icon="o-magnifying-glass"/>
-                        @endcan
-                    </div>
-                    <x-mary-table
-                        :headers="$headersRole"
-                        :rows="$roles"
-                        :row-decoration="$this->rowDecoration"
-                        wire:model="rolesGiven"
-                        selectable
-                        with-pagination/>
+                @if($supportsRoles && !auth()->user()->can('managePermissions', $user))
+                    @can('assignRole', $user)
+                        <div class="m-3">
+                            <x-partials.header-title :separator="true" :heading="__('Roles')"/>
+                            @can('assignRole', $user)
+                                <x-mary-input class="input-sm" :placeholder="__('Search...')"
+                                              wire:model.live.debounce="searchRole" clearable
+                                              icon="o-magnifying-glass"/>
+                            @endcan
+                        </div>
+                        <x-mary-table
+                            :headers="$headersRole"
+                            :rows="$roles"
+                            :row-decoration="$this->rowDecoration"
+                            wire:model="rolesGiven"
+                            selectable
+                            with-pagination/>
+                    @else
+                        <img src="/images/user-action-page.svg" width="300" class="mx-auto"/>
+                    @endcan
                 @else
                     <img src="/images/user-action-page.svg" width="300" class="mx-auto"/>
-                @endcan
-                @else
-                    <img src="/images/user-action-page.svg" width="300" class="mx-auto"/>
-                    @endunlessrole
+                @endif
             </div>
         </div>
-        @role('super-admin')
+        @if($supportsRoles && auth()->user()->can('managePermissions', $user))
         <div class="flex gap-5 w-full">
             <div class="w-full lg:w-1/2">
                 <div class="m-3">
@@ -282,7 +295,6 @@ new class extends Component {
                     with-pagination/>
             </div>
         </div>
-        @endrole
+        @endif
     </x-slot:content>
 </x-pages.layout>
-

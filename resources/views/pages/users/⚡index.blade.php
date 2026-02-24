@@ -100,18 +100,18 @@ new class extends Component {
 }; ?>
 
 <x-pages.layout :page-title="__('Users')">
-    @can('user.search')
+    @can('viewAny', \App\Models\User::class)
         <x-slot:search>
             <x-mary-input class="input-sm" :placeholder="__('Search...')" wire:model.live.debounce="search" clearable
                           icon="o-magnifying-glass"/>
         </x-slot:search>
     @endcan
     <x-slot:actions>
-        @can('user.filter')
+        @can('viewAny', \App\Models\User::class)
             <x-mary-button class="btn-soft btn-sm" :label="__('Filters')" @click="$wire.drawer=true" responsive
                            icon="o-funnel"/>
         @endcan
-        @can('user.create')
+        @can('create', \App\Models\User::class)
             <x-mary-button :link="route('users.create')" icon="o-plus" :label="__('Create')" class="btn-primary btn-sm"
                            responsive/>
         @endcan
@@ -127,13 +127,13 @@ new class extends Component {
                     'status-warning' => $user->status === UserStatus::INACTIVE,
                     'status-error' => $user->status === UserStatus::SUSPENDED,
                 ])></span>
-                {{-- <x-mary-avatar image="{{ $user?->avatar ?? '/images/empty-user.jpg' }}" class="!w-8 !rounded-lg"/> --}}
+                <x-mary-avatar image="{{ $user?->avatar ?? '/images/empty-user.jpg' }}" class="!w-8 !rounded-lg"/>
             </div>
             @endscope
 
             @scope('actions', $user)
             <div class="inline-flex gap-2 items-center justify-end">
-                {{-- @if ($user?->roles->isNotEmpty())
+                @if ($user->roles?->isNotEmpty())
                 <x-mary-popover>
                     <x-slot:trigger>
                         <x-mary-button icon="fas.user-tag" class="btn-circle btn-ghost" />
@@ -148,7 +148,7 @@ new class extends Component {
                 </x-mary-popover>
                 @endif
 
-                @if ($user->permissions->isNotEmpty())
+                @if ($user->permissions?->isNotEmpty())
                 <x-mary-popover>
                     <x-slot:trigger>
                         <x-mary-button icon="fas.user-shield" class="btn-circle btn-ghost" />
@@ -161,14 +161,14 @@ new class extends Component {
                         </div>
                     </x-slot:content>
                 </x-mary-popover>
-                @endif --}}
+                @endif
                 @can('view', $user)
                     <x-mary-dropdown>
                         <x-slot:trigger>
                             <x-mary-button icon="o-ellipsis-horizontal" class="btn-circle"/>
                         </x-slot:trigger>
 
-                        @can('user.update')
+                        @can('update', $user)
                             <x-mary-menu-item :title="__('Edit')" icon="o-pencil"
                                               :link="route('users.edit', ['user' => $user->id])"/>
                         @endcan
@@ -177,13 +177,13 @@ new class extends Component {
                                               @click="$dispatch('target-delete', { user: {{ $user->id }} })" spinner/>
                         @endcan
                     </x-mary-dropdown>
-                @endcanany
+                @endcan
             </div>
             @endscope
         </x-mary-table>
     </x-slot:content>
 
-    @can('user.filter')
+    @can('viewAny', \App\Models\User::class)
         <x-mary-drawer wire:model="drawer" :title="__('Filters')" right separator with-close-button class="lg:w-1/3">
             <x-mary-group :label="__('Status')" wire:model.live="status" :options="$statusGroup"
                           class="[&:checked]:!btn-primary"/>
