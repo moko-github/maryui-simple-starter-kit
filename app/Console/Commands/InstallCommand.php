@@ -152,13 +152,13 @@ class InstallCommand extends Command
         $file = base_path('resources/views/pages/users/⚡create.blade.php');
         $content = File::get($file);
 
-        if (str_contains($content, 'public string $kerberos')) {
+        if (str_contains($content, '$kerberos')) {
             return;
         }
 
         $content = str_replace(
             "#[Validate('required|email|max:50|unique:users')]\n    public string \$email = '';",
-            "#[Validate('required|email|max:50|unique:users')]\n    public string \$email = '';\n\n    #[Validate('nullable|string|max:255')]\n    public string \$kerberos = '';",
+            "#[Validate('required|email|max:50|unique:users')]\n    public string \$email = '';\n\n    #[Validate('nullable|string|max:255')]\n    public ?string \$kerberos = null;",
             $content
         );
 
@@ -176,13 +176,13 @@ class InstallCommand extends Command
         $file = base_path('resources/views/pages/users/⚡edit.blade.php');
         $content = File::get($file);
 
-        if (str_contains($content, 'public string $kerberos')) {
+        if (str_contains($content, '$kerberos')) {
             return;
         }
 
         $content = str_replace(
             "public string \$email = '';",
-            "public string \$email = '';\n\n    #[Validate('nullable|string|max:255')]\n    public string \$kerberos = '';",
+            "public string \$email = '';\n\n    #[Validate('nullable|string|max:255')]\n    public ?string \$kerberos = null;",
             $content
         );
 
@@ -218,10 +218,10 @@ class InstallCommand extends Command
         $phpFile = base_path('resources/views/pages/mfc-users/⚡create/create.php');
         $phpContent = File::get($phpFile);
 
-        if (! str_contains($phpContent, 'public string $kerberos')) {
+        if (! str_contains($phpContent, '$kerberos')) {
             $phpContent = str_replace(
                 "#[Validate('required|email|max:50|unique:users')]\n    public string \$email = '';",
-                "#[Validate('required|email|max:50|unique:users')]\n    public string \$email = '';\n\n    #[Validate('nullable|string|max:255')]\n    public string \$kerberos = '';",
+                "#[Validate('required|email|max:50|unique:users')]\n    public string \$email = '';\n\n    #[Validate('nullable|string|max:255')]\n    public ?string \$kerberos = null;",
                 $phpContent
             );
 
@@ -247,10 +247,10 @@ class InstallCommand extends Command
         $phpFile = base_path('resources/views/pages/mfc-users/⚡edit/edit.php');
         $phpContent = File::get($phpFile);
 
-        if (! str_contains($phpContent, 'public string $kerberos')) {
+        if (! str_contains($phpContent, '$kerberos')) {
             $phpContent = str_replace(
                 "public string \$email = '';",
-                "public string \$email = '';\n\n    #[Validate('nullable|string|max:255')]\n    public string \$kerberos = '';",
+                "public string \$email = '';\n\n    #[Validate('nullable|string|max:255')]\n    public ?string \$kerberos = null;",
                 $phpContent
             );
 

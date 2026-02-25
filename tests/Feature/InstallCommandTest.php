@@ -50,12 +50,12 @@ describe('InstallCommand::configureUsersCreate', function () {
         $method->invoke(new InstallCommand);
 
         expect($written)
-            ->toContain('public string $kerberos')
+            ->toContain('public ?string $kerberos = null')
             ->toContain('wire:model="kerberos"');
     });
 
     it('does not modify users create when kerberos already exists', function () {
-        $content = "public string \$kerberos = '';";
+        $content = 'public ?string $kerberos = null;';
 
         File::shouldReceive('get')->once()->andReturn($content);
         File::shouldReceive('put')->never();
@@ -83,12 +83,12 @@ describe('InstallCommand::configureUsersEdit', function () {
         $method->invoke(new InstallCommand);
 
         expect($written)
-            ->toContain('public string $kerberos')
+            ->toContain('public ?string $kerberos = null')
             ->toContain('wire:model="kerberos"');
     });
 
     it('does not modify users edit when kerberos already exists', function () {
-        $content = "public string \$kerberos = '';";
+        $content = 'public ?string $kerberos = null;';
 
         File::shouldReceive('get')->once()->andReturn($content);
         File::shouldReceive('put')->never();
@@ -152,12 +152,12 @@ describe('InstallCommand::configureMfcUsersCreate', function () {
         $method = new ReflectionMethod(InstallCommand::class, 'configureMfcUsersCreate');
         $method->invoke(new InstallCommand);
 
-        expect($writtenPhp)->toContain('public string $kerberos')
+        expect($writtenPhp)->toContain('public ?string $kerberos = null')
             ->and($writtenBlade)->toContain('wire:model="kerberos"');
     });
 
     it('does not modify mfc-users create when kerberos already exists', function () {
-        $phpContent = "public string \$kerberos = '';";
+        $phpContent = 'public ?string $kerberos = null;';
         $bladeContent = 'wire:model="kerberos"';
 
         File::shouldReceive('get')->twice()->andReturn($phpContent, $bladeContent);
@@ -191,12 +191,12 @@ describe('InstallCommand::configureMfcUsersEdit', function () {
         $method = new ReflectionMethod(InstallCommand::class, 'configureMfcUsersEdit');
         $method->invoke(new InstallCommand);
 
-        expect($writtenPhp)->toContain('public string $kerberos')
+        expect($writtenPhp)->toContain('public ?string $kerberos = null')
             ->and($writtenBlade)->toContain('wire:model="kerberos"');
     });
 
     it('does not modify mfc-users edit when kerberos already exists', function () {
-        $phpContent = "public string \$kerberos = '';";
+        $phpContent = 'public ?string $kerberos = null;';
         $bladeContent = 'wire:model="kerberos"';
 
         File::shouldReceive('get')->twice()->andReturn($phpContent, $bladeContent);
