@@ -32,7 +32,7 @@
 
             @scope('actions', $user)
             <div class="inline-flex gap-2 items-center justify-end">
-                @if($user->role)
+                @if($supportsRoles && $user->role)
                     <x-mary-badge :value="$user->role->name" class="badge-secondary badge-xs" />
                 @endif
                 @can('view', $user)

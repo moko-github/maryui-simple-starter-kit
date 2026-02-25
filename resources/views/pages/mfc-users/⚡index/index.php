@@ -6,6 +6,7 @@ use App\Traits\ClearsFilters;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Schema;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Mary\Traits\Toast;
@@ -65,14 +66,23 @@ new class extends Component
         $this->redirectRoute('mfc-users.edit', ['user' => $user], false, true);
     }
 
+    private function supportsRoles(): bool
+    {
+        return class_exists(\App\Models\Role::class)
+            && Schema::hasTable('roles');
+    }
+
     public function users(): LengthAwarePaginator
     {
-        return User::query()
+        $query = User::query()
             ->when($this->search, fn(Builder $q) => $q->where('name', 'like', "%$this->search%"))
-            ->when($this->status, fn(Builder $q) => $q->where('status', $this->status))
-            ->with('role')
-            ->orderBy(...array_values($this->sortBy))
-            ->paginate(10);
+            ->when($this->status, fn(Builder $q) => $q->where('status', $this->status));
+
+        if ($this->supportsRoles()) {
+            $query->with('role');
+        }
+
+        return $query->orderBy(...array_values($this->sortBy))->paginate(10);
     }
 
     public function with(): array
@@ -81,6 +91,7 @@ new class extends Component
             'users' => $this->users(),
             'headers' => $this->headers(),
             'statusGroup' => UserStatus::all(),
+            'supportsRoles' => $this->supportsRoles(),
         ];
     }
 
