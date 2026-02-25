@@ -34,12 +34,7 @@ new class extends Component {
     #[Validate('array')]
     public array $rolesGiven = [];
 
-    #[Validate('array')]
-    public array $permissionsGiven = [];
-
     public string $searchRole = '';
-
-    public string $searchPermission = '';
 
     public array $statusOptions;
 
@@ -86,7 +81,7 @@ new class extends Component {
 
         $this->processUpload($validated);
 
-        $this->user->update(Arr::except($validated, ['rolesGiven', 'permissionsGiven']));
+        $this->user->update(Arr::except($validated, ['rolesGiven']));
 
         if ($this->supportsRoles() && auth()->user()->can('assignRole', $this->user)) {
             $this->user->role_id = $this->rolesGiven[0] ?? null;
@@ -132,26 +127,7 @@ new class extends Component {
             ->paginate(10);
     }
 
-    public function permissions(): LengthAwarePaginator
-    {
-        if (!$this->supportsRoles()) {
-            return new LengthAwarePaginator([], 0, 10);
-        }
-
-        return \Spatie\Permission\Models\Permission::query()
-            ->when($this->searchPermission, fn(Builder $q) => $q->where('name', 'like', "%$this->searchPermission%"))
-            ->paginate(10);
-    }
-
     public function headersRole(): array
-    {
-        return [
-            ['key' => 'id', 'label' => '#', 'class' => 'w-1'],
-            ['key' => 'name', 'label' => 'Name'],
-        ];
-    }
-
-    public function headersPermission(): array
     {
         return [
             ['key' => 'id', 'label' => '#', 'class' => 'w-1'],
@@ -166,13 +142,6 @@ new class extends Component {
             'roles' => $this->supportsRoles() ? $this->roles() : new LengthAwarePaginator([], 0, 10),
             'headersRole' => $this->headersRole(),
         ];
-
-        if ($this->supportsRoles() && auth()->user()->can('managePermissions', $this->user)) {
-            $data = array_merge($data, [
-                'permissions' => $this->permissions(),
-                'headersPermission' => $this->headersPermission(),
-            ]);
-        }
 
         return $data;
     }
@@ -225,7 +194,7 @@ new class extends Component {
                 </x-slot:actions>
             </x-mary-form>
             <div class="hidden lg:block place-self-center w-full">
-                @if($supportsRoles && !auth()->user()->can('managePermissions', $user))
+                @if($supportsRoles)
                     @can('assignRole', $user)
                         <div class="m-3">
                             <x-partials.header-title :separator="true" :heading="__('Roles')"/>
@@ -250,38 +219,5 @@ new class extends Component {
                 @endif
             </div>
         </div>
-        @if($supportsRoles && auth()->user()->can('managePermissions', $user))
-        <div class="flex gap-5 w-full">
-            <div class="w-full lg:w-1/2">
-                <div class="m-3">
-                    <x-partials.header-title :separator="true" :heading="__('Roles')"/>
-                    <x-mary-input class="input-sm" :placeholder="__('Search...')"
-                                  wire:model.live.debounce="searchRole" clearable
-                                  icon="o-magnifying-glass"/>
-                </div>
-                <x-mary-table
-                    :headers="$headersRole"
-                    :rows="$roles"
-                    :row-decoration="$this->rowDecoration"
-                    wire:model="rolesGiven"
-                    selectable
-                    with-pagination/>
-            </div>
-            <div class="w-full lg:w-1/2">
-                <div class="m-3">
-                    <x-partials.header-title :separator="true" :heading="__('Permissions')"/>
-                    <x-mary-input class="input-sm" :placeholder="__('Search...')"
-                                  wire:model.live.debounce="searchPermission" clearable
-                                  icon="o-magnifying-glass"/>
-                </div>
-                <x-mary-table
-                    :headers="$headersPermission"
-                    :rows="$permissions"
-                    wire:model="permissionsGiven"
-                    selectable
-                    with-pagination/>
-            </div>
-        </div>
-        @endif
     </x-slot:content>
 </x-pages.layout>

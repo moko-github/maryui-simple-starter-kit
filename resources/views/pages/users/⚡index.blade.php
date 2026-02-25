@@ -72,7 +72,7 @@ new class extends Component {
             // ->hideSuperAdmin() // specifique laravel-permission
             ->when($this->search, fn(Builder $q) => $q->where('name', 'like', "%$this->search%"))
             ->when($this->status, fn(Builder $q) => $q->where('status', $this->status))
-            // ->with(['roles', 'permissions']) // specifique laravel-permission
+            ->with('role')
             ->orderBy(...array_values($this->sortBy))
             ->paginate(10);
     }
@@ -133,34 +133,8 @@ new class extends Component {
 
             @scope('actions', $user)
             <div class="inline-flex gap-2 items-center justify-end">
-                @if ($user->roles?->isNotEmpty())
-                <x-mary-popover>
-                    <x-slot:trigger>
-                        <x-mary-button icon="fas.user-tag" class="btn-circle btn-ghost" />
-                    </x-slot:trigger>
-                    <x-slot:content class="border border-warning">
-                        <div class="flex flex-wrap gap-1">
-                        @foreach($user->roles as $role)
-                            <x-mary-badge :value="$role->name" class="badge-secondary badge-xs" />
-                        @endforeach
-                        </div>
-                    </x-slot:content>
-                </x-mary-popover>
-                @endif
-
-                @if ($user->permissions?->isNotEmpty())
-                <x-mary-popover>
-                    <x-slot:trigger>
-                        <x-mary-button icon="fas.user-shield" class="btn-circle btn-ghost" />
-                    </x-slot:trigger>
-                    <x-slot:content class="border border-warning">
-                        <div class="flex flex-wrap gap-1">
-                            @foreach($user->permissions as $permission)
-                                <x-mary-badge :value="$permission->name" class="badge-primary badge-xs" />
-                            @endforeach
-                        </div>
-                    </x-slot:content>
-                </x-mary-popover>
+                @if($user->role)
+                    <x-mary-badge :value="$user->role->name" class="badge-secondary badge-xs" />
                 @endif
                 @can('view', $user)
                     <x-mary-dropdown>

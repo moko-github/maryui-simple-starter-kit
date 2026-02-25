@@ -70,6 +70,7 @@ new class extends Component
         return User::query()
             ->when($this->search, fn(Builder $q) => $q->where('name', 'like', "%$this->search%"))
             ->when($this->status, fn(Builder $q) => $q->where('status', $this->status))
+            ->with('role')
             ->orderBy(...array_values($this->sortBy))
             ->paginate(10);
     }

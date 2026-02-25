@@ -35,7 +35,7 @@
                 </x-slot:actions>
             </x-mary-form>
             <div class="hidden lg:block place-self-center w-full">
-                @if($supportsRoles && !auth()->user()->can('managePermissions', $user))
+                @if($supportsRoles)
                     @can('assignRole', $user)
                         <div class="m-3">
                             <x-partials.header-title :separator="true" :heading="__('Roles')"/>
@@ -60,38 +60,5 @@
                 @endif
             </div>
         </div>
-        @if($supportsRoles && auth()->user()->can('managePermissions', $user))
-        <div class="flex gap-5 w-full">
-            <div class="w-full lg:w-1/2">
-                <div class="m-3">
-                    <x-partials.header-title :separator="true" :heading="__('Roles')"/>
-                    <x-mary-input class="input-sm" :placeholder="__('Search...')"
-                                  wire:model.live.debounce="searchRole" clearable
-                                  icon="o-magnifying-glass"/>
-                </div>
-                <x-mary-table
-                    :headers="$headersRole"
-                    :rows="$roles"
-                    :row-decoration="$this->rowDecoration"
-                    wire:model="rolesGiven"
-                    selectable
-                    with-pagination/>
-            </div>
-            <div class="w-full lg:w-1/2">
-                <div class="m-3">
-                    <x-partials.header-title :separator="true" :heading="__('Permissions')"/>
-                    <x-mary-input class="input-sm" :placeholder="__('Search...')"
-                                  wire:model.live.debounce="searchPermission" clearable
-                                  icon="o-magnifying-glass"/>
-                </div>
-                <x-mary-table
-                    :headers="$headersPermission"
-                    :rows="$permissions"
-                    wire:model="permissionsGiven"
-                    selectable
-                    with-pagination/>
-            </div>
-        </div>
-        @endif
     </x-slot:content>
 </x-pages.layout>
