@@ -3,23 +3,18 @@
 use App\Enums\UserStatus;
 use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
-use Livewire\Attributes\Computed;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\WithFileUploads;
-use Livewire\WithPagination;
 use Mary\Traits\Toast;
 
 new class extends Component
 {
     use Toast;
     use WithFileUploads;
-    use WithPagination;
 
     public User $user;
 
@@ -34,10 +29,8 @@ new class extends Component
     #[Validate('required|int')]
     public int $status;
 
-    #[Validate('array')]
-    public array $rolesGiven = [];
-
-    public string $searchRole = '';
+    #[Validate('nullable|integer')]
+    public ?int $roleId = null;
 
     public array $statusOptions;
 
@@ -49,9 +42,7 @@ new class extends Component
 
         $this->fill($this->user);
 
-        if ($this->supportsRoles()) {
-            $this->rolesGiven = $this->user->role_id ? [$this->user->role_id] : [];
-        }
+        $this->roleId = $this->user->role_id;
 
         $this->statusOptions = UserStatus::all();
     }
@@ -84,10 +75,10 @@ new class extends Component
 
         $this->processUpload($validated);
 
-        $this->user->update(Arr::except($validated, ['rolesGiven']));
+        $this->user->update(Arr::except($validated, ['roleId']));
 
         if ($this->supportsRoles() && auth()->user()->can('assignRole', $this->user)) {
-            $this->user->role_id = $this->rolesGiven[0] ?? null;
+            $this->user->role_id = $this->roleId;
             $this->user->save();
         }
 
@@ -113,40 +104,12 @@ new class extends Component
         $validated['avatar'] = "/storage/{$url}";
     }
 
-    #[Computed]
-    public function rowDecoration(): array
-    {
-        return [];
-    }
-
-    public function roles(): LengthAwarePaginator
-    {
-        if (!$this->supportsRoles()) {
-            return new LengthAwarePaginator([], 0, 10);
-        }
-
-        return \App\Models\Role::query()
-            ->when($this->searchRole, fn(Builder $q) => $q->where('name', 'like', "%$this->searchRole%"))
-            ->paginate(10);
-    }
-
-    public function headersRole(): array
-    {
-        return [
-            ['key' => 'id', 'label' => '#', 'class' => 'w-1'],
-            ['key' => 'name', 'label' => 'Name'],
-        ];
-    }
-
     public function with(): array
     {
-        $data = [
+        return [
             'supportsRoles' => $this->supportsRoles(),
-            'roles' => $this->supportsRoles() ? $this->roles() : new LengthAwarePaginator([], 0, 10),
-            'headersRole' => $this->headersRole(),
+            'roles' => $this->supportsRoles() ? \App\Models\Role::all() : collect(),
         ];
-
-        return $data;
     }
 
     public function exception(Throwable $e, $stopPropagation): void
