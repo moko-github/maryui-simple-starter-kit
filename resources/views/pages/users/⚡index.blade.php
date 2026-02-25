@@ -142,7 +142,7 @@ new class extends Component {
             </div>
             @endscope
 
-            @scope('actions', $user)
+            @scope('actions', $user, $supportsRoles)
             <div class="inline-flex gap-2 items-center justify-end">
                 @if($supportsRoles && $user->role)
                     <x-mary-badge :value="$user->role->name" class="badge-secondary badge-xs" />
