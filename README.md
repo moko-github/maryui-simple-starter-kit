@@ -1,4 +1,8 @@
 # MaryUI Simple Starter Kit
+[![Laravel](https://img.shields.io/badge/Laravel-12.x-red?style=flat&logo=laravel)](https://laravel.com)
+[![Livewire](https://img.shields.io/badge/Livewire-4.x-purple?style=flat)](https://livewire.laravel.com)
+[![Mary UI](https://img.shields.io/badge/Mary_UI-2.x-blue?style=flat)](https://mary-ui.com)
+[![License](https://img.shields.io/badge/License-MIT-green?style=flat)](LICENSE)
 
 Un starter kit Laravel léger basé sur [Mary UI](https://mary-ui.com), inspiré de [mary-ui-starter-kit](https://github.com/lauroguedes/mary-ui-starter-kit), simplifié pour une intégration sans `laravel-permission` et avec un module optionnel d'authentification Kerberos (SSO).
 
