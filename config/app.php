@@ -105,6 +105,11 @@ return [
         ),
     ],
 
+    'appearance' => [
+        'app_layout' => env('APP_LAYOUT', 'sidebar'),
+        'login_layout' => env('LOGIN_LAYOUT', 'card'),
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Maintenance Mode Driver

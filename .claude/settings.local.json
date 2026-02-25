@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__laravel-boost__list-artisan-commands",
+      "mcp__laravel-boost__search-docs",
+      "Bash(\"C:/Users/mokoo/Herd/maryui-simple-starter-kit/resources/views/pages/mfc-users/⚡create/create.blade.php\":*)",
+      "mcp__laravel-boost__get-absolute-url"
+    ]
+  }
+}

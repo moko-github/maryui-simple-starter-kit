@@ -1,0 +1,10 @@
+<x-mary-menu {{ $attributes }} activate-by-route>
+    {{-- @can('dashboard.view') --}}
+    <x-mary-menu-item title="Dashboard" icon="m-rectangle-group" :link="route('dashboard')" />
+    {{-- @endcan --}}
+
+    {{-- @can('user.list') --}}
+    <x-mary-menu-item title="Users (single-file)" icon="s-users" :link="route('users.index')" />
+    <x-mary-menu-item title="Users (mfc)" icon="s-users" :link="route('mfc-users.index')" />
+    {{-- @endcan --}}
+</x-mary-menu>
