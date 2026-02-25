@@ -106,12 +106,12 @@ class InstallCommand extends Command
 
     protected function configureLoginView(): void
     {
-        $loginFile = base_path('resources/views/livewire/auth/login.blade.php');
+        $loginFile = base_path('resources\views\pages\auth\⚡login.blade.php');
         $content = File::get($loginFile);
 
         $content = str_replace(
-            "\n</x-layouts::auth>",
-            "\n\n    @livewire('auth.simulate-kerberos')\n</x-layouts::auth>",
+            "\n</form>",
+            "\n</form> \n\n    @livewire('auth.simulate-kerberos')",
             $content
         );
 
