@@ -19,6 +19,9 @@
                     <x-mary-group :label="__('Status')" wire:model="status" :options="$statusOptions"
                                   class="[&:checked]:!btn-primary"/>
                 @endcan
+                @if($supportsRoles)
+                    <x-mary-select :label="__('Role')" wire:model="roleId" :options="$roles" :placeholder="__('No role')"/>
+                @endif
 
                 <x-slot:actions>
                     <x-mary-button :label="__('Cancel')" :link="route('mfc-users.index')" class="btn-soft"/>
@@ -27,23 +30,7 @@
                 </x-slot:actions>
             </x-mary-form>
             <div class="hidden lg:block place-self-center w-full">
-                @if($supportsRoles)
-                    <div class="m-3">
-                        <x-partials.header-title :separator="true" :heading="__('Roles')"/>
-                        <x-mary-input class="input-sm" :placeholder="__('Search...')"
-                                      wire:model.live.debounce="searchRole" clearable
-                                      icon="o-magnifying-glass"/>
-                    </div>
-                    <x-mary-table
-                        :headers="$headersRole"
-                        :rows="$roles"
-                        :row-decoration="$this->rowDecoration"
-                        wire:model="rolesGiven"
-                        selectable
-                        with-pagination/>
-                @else
-                    <img src="/images/user-action-page.svg" width="300" class="mx-auto"/>
-                @endif
+                <img src="/images/user-action-page.svg" width="300" class="mx-auto"/>
             </div>
         </div>
     </x-slot:content>
