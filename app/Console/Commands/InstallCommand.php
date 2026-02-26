@@ -45,6 +45,7 @@ class InstallCommand extends Command
         $this->configureMiddleware();
         $this->configureUserModel();
         $this->configureLoginView();
+        $this->configureSidebar();
         $this->configureCrudViews();
         $this->configureRoutes();
         $this->configureScheduler();
@@ -121,6 +122,24 @@ class InstallCommand extends Command
         );
 
         File::put($loginFile, $content);
+    }
+
+    protected function configureSidebar(): void
+    {
+        $file = base_path('resources/views/layouts/app/sidebar.blade.php');
+        $content = File::get($file);
+
+        if (str_contains($content, 'simulation-banner')) {
+            return;
+        }
+
+        $content = str_replace(
+            "<x-mary-theme-toggle />\n            </div>",
+            "<x-mary-theme-toggle />\n            </div>\n            @livewire('auth.simulation-banner')",
+            $content
+        );
+
+        File::put($file, $content);
     }
 
     protected function configureCrudViews(): void

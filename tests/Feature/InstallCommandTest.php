@@ -34,6 +34,37 @@ describe('InstallCommand::configureLoginView', function () {
     });
 });
 
+describe('InstallCommand::configureSidebar', function () {
+    it('adds simulation-banner livewire component after theme toggle', function () {
+        $content = "<x-mary-theme-toggle />\n            </div>";
+        $written = null;
+
+        File::shouldReceive('get')->once()->andReturn($content);
+        File::shouldReceive('put')->once()->withArgs(function ($path, $newContent) use (&$written) {
+            $written = $newContent;
+
+            return true;
+        });
+
+        $method = new ReflectionMethod(InstallCommand::class, 'configureSidebar');
+        $method->invoke(new InstallCommand);
+
+        expect($written)->toContain("@livewire('auth.simulation-banner')");
+    });
+
+    it('does not modify sidebar when simulation-banner already exists', function () {
+        $content = "<x-mary-theme-toggle />\n            </div>\n            @livewire('auth.simulation-banner')";
+
+        File::shouldReceive('get')->once()->andReturn($content);
+        File::shouldReceive('put')->never();
+
+        $method = new ReflectionMethod(InstallCommand::class, 'configureSidebar');
+        $method->invoke(new InstallCommand);
+
+        expect(substr_count($content, 'simulation-banner'))->toBe(1);
+    });
+});
+
 describe('InstallCommand::configureUsersIndex', function () {
     it('adds kerberos column to users index headers', function () {
         $content = "['key' => 'email', 'label' => 'Email', 'sortable' => false]\n        ];";
