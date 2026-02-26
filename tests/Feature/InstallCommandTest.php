@@ -3,6 +3,37 @@
 use App\Console\Commands\InstallCommand;
 use Illuminate\Support\Facades\File;
 
+describe('InstallCommand::configureLoginView', function () {
+    it('adds simulate-kerberos livewire component after the form', function () {
+        $content = "        <x-mary-button type=\"submit\" :label=\"__('Log in')\" class=\"btn-accent\"/>\n    </form>\n\n    @if (Route::has('register'))";
+        $written = null;
+
+        File::shouldReceive('get')->once()->andReturn($content);
+        File::shouldReceive('put')->once()->withArgs(function ($path, $newContent) use (&$written) {
+            $written = $newContent;
+
+            return true;
+        });
+
+        $method = new ReflectionMethod(InstallCommand::class, 'configureLoginView');
+        $method->invoke(new InstallCommand);
+
+        expect($written)->toContain("@livewire('auth.simulate-kerberos')");
+    });
+
+    it('does not modify login view when simulate-kerberos already exists', function () {
+        $content = "    </form>\n\n    @livewire('auth.simulate-kerberos')";
+
+        File::shouldReceive('get')->once()->andReturn($content);
+        File::shouldReceive('put')->never();
+
+        $method = new ReflectionMethod(InstallCommand::class, 'configureLoginView');
+        $method->invoke(new InstallCommand);
+
+        expect(substr_count($content, 'simulate-kerberos'))->toBe(1);
+    });
+});
+
 describe('InstallCommand::configureUsersIndex', function () {
     it('adds kerberos column to users index headers', function () {
         $content = "['key' => 'email', 'label' => 'Email', 'sortable' => false]\n        ];";
