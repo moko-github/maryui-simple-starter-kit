@@ -30,36 +30,10 @@
             </div>
             @endscope
 
-            @scope('actions', $user)
+            @scope('actions', $user, $supportsRoles)
             <div class="inline-flex gap-2 items-center justify-end">
-                @if ($user->roles?->isNotEmpty())
-                <x-mary-popover>
-                    <x-slot:trigger>
-                        <x-mary-button icon="fas.user-tag" class="btn-circle btn-ghost" />
-                    </x-slot:trigger>
-                    <x-slot:content class="border border-warning">
-                        <div class="flex flex-wrap gap-1">
-                        @foreach($user->roles as $role)
-                            <x-mary-badge :value="$role->name" class="badge-secondary badge-xs" />
-                        @endforeach
-                        </div>
-                    </x-slot:content>
-                </x-mary-popover>
-                @endif
-
-                @if ($user->permissions?->isNotEmpty())
-                <x-mary-popover>
-                    <x-slot:trigger>
-                        <x-mary-button icon="fas.user-shield" class="btn-circle btn-ghost" />
-                    </x-slot:trigger>
-                    <x-slot:content class="border border-warning">
-                        <div class="flex flex-wrap gap-1">
-                            @foreach($user->permissions as $permission)
-                                <x-mary-badge :value="$permission->name" class="badge-primary badge-xs" />
-                            @endforeach
-                        </div>
-                    </x-slot:content>
-                </x-mary-popover>
+                @if($supportsRoles && $user->role)
+                    <x-mary-badge :value="$user->role->name" class="badge-secondary badge-xs" />
                 @endif
                 @can('view', $user)
                     <x-mary-dropdown>
