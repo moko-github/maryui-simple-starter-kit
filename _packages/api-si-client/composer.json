@@ -1,0 +1,35 @@
+{
+    "$schema": "https://getcomposer.org/schema.json",
+    "name": "moko/api-si-client",
+    "description": "Client Laravel pour l'API SI — DTOs, events, jobs, middleware, webhook.",
+    "type": "library",
+    "license": "proprietary",
+    "require": {
+        "php": "^8.2",
+        "moko/laravel-satellite": "^1.0",
+        "illuminate/bus": "^11.0|^12.0",
+        "illuminate/http": "^11.0|^12.0",
+        "illuminate/queue": "^11.0|^12.0",
+        "illuminate/support": "^11.0|^12.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moko\\ApiSi\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moko\\ApiSi\\ApiSiServiceProvider"
+            ]
+        }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/moko-github/api-si-satellite"
+        }
+    ],
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
