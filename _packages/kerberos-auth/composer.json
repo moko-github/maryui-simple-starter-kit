@@ -1,0 +1,25 @@
+{
+    "name": "moko-github/kerberos-auth",
+    "description": "Kerberos SSO authentication package for Laravel (REMOTE_USER, demande d'acces, mode simulation)",
+    "type": "library",
+    "license": "proprietary",
+    "require": {
+        "php": "^8.2",
+        "laravel/framework": "^12.0",
+        "livewire/livewire": "^3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "MokoGithub\\KerberosAuth\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "MokoGithub\\KerberosAuth\\KerberosServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
