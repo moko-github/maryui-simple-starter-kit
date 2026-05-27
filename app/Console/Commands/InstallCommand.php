@@ -41,16 +41,17 @@ class InstallCommand extends Command
 
         note("Installation du module d'authentification Kerberos...");
 
-        $this->publishStubs();
-        $this->configureMiddleware();
-        $this->configureUserModel();
+        // Délégation au package : middleware, User model, routes, env, migrations, seeders
+        $this->call('kerberos:install');
+
+        // Publier la config et forcer le layout du starter kit
+        $this->call('vendor:publish', ['--tag' => 'kerberos-config', '--force' => false]);
+        $this->setKerberosLayout();
+
+        // Injections spécifiques aux vues du starter kit
         $this->configureLoginView();
         $this->configureSidebar();
         $this->configureCrudViews();
-        $this->configureRoutes();
-        $this->configureScheduler();
-        $this->appendEnvVariables();
-        $this->runKerberosMigrations();
 
         $this->info('✓ Authentification Kerberos installée avec succès.');
 
@@ -63,53 +64,24 @@ class InstallCommand extends Command
         );
     }
 
-    protected function publishStubs(): void
+    protected function setKerberosLayout(): void
     {
-        $stubsPath = base_path('stubs/kerberos');
+        $configFile = config_path('kerberos.php');
 
-        foreach (File::allFiles($stubsPath) as $file) {
-            $relativePath = $file->getRelativePathname();
-            $destination = base_path($relativePath);
-
-            File::ensureDirectoryExists(dirname($destination));
-            File::copy($file->getPathname(), $destination);
+        if (! File::exists($configFile)) {
+            return;
         }
-    }
 
-    protected function configureMiddleware(): void
-    {
-        $appFile = base_path('bootstrap/app.php');
-        $content = File::get($appFile);
-
-        $search = "->withMiddleware(function (Middleware \$middleware): void {\n        //\n    })";
-        $replace = "->withMiddleware(function (Middleware \$middleware): void {\n        \$middleware->appendToGroup('web', \\App\\Http\\Middleware\\KerberosAuthentication::class);\n        \$middleware->alias(['kerberos.simulation' => \\App\\Http\\Middleware\\EnsureKerberosSimulationAllowed::class]);\n    })";
-
-        File::put($appFile, str_replace($search, $replace, $content));
-    }
-
-    protected function configureUserModel(): void
-    {
-        $userFile = base_path('app/Models/User.php');
-        $content = File::get($userFile);
-
-        $content = str_replace(
-            "'password',\n    ];",
-            "'password',\n        'kerberos',\n        'role_id',\n    ];",
-            $content
-        );
-
-        $roleMethod = "\n    public function role(): \\Illuminate\\Database\\Eloquent\\Relations\\BelongsTo\n    {\n        return \$this->belongsTo(Role::class);\n    }\n";
-
-        $lastBrace = strrpos($content, '}');
-        $content = substr($content, 0, $lastBrace).$roleMethod.'}'.substr($content, $lastBrace + 1);
-
-        File::put($userFile, $content);
+        $content = File::get($configFile);
+        $content = str_replace("'layout' => null,", "'layout' => 'layouts.auth',", $content);
+        File::put($configFile, $content);
+        $this->line('  Layout Kerberos configuré sur layouts.auth.');
     }
 
     protected function configureLoginView(): void
     {
         $loginFile = base_path('resources/views/pages/auth/⚡login.blade.php');
-        $content = File::get($loginFile);
+        $content   = File::get($loginFile);
 
         if (str_contains($content, 'simulate-kerberos')) {
             return;
@@ -122,11 +94,12 @@ class InstallCommand extends Command
         );
 
         File::put($loginFile, $content);
+        $this->line('  Composant simulate-kerberos ajouté à la page login.');
     }
 
     protected function configureSidebar(): void
     {
-        $file = base_path('resources/views/layouts/app/sidebar.blade.php');
+        $file    = base_path('resources/views/layouts/app/sidebar.blade.php');
         $content = File::get($file);
 
         if (str_contains($content, 'simulation-banner')) {
@@ -140,6 +113,7 @@ class InstallCommand extends Command
         );
 
         File::put($file, $content);
+        $this->line('  Composant simulation-banner ajouté à la sidebar.');
     }
 
     protected function configureCrudViews(): void
@@ -154,7 +128,7 @@ class InstallCommand extends Command
 
     protected function configureUsersIndex(): void
     {
-        $file = base_path('resources/views/pages/users/⚡index.blade.php');
+        $file    = base_path('resources/views/pages/users/⚡index.blade.php');
         $content = File::get($file);
 
         if (str_contains($content, "'kerberos'")) {
@@ -172,7 +146,7 @@ class InstallCommand extends Command
 
     protected function configureUsersCreate(): void
     {
-        $file = base_path('resources/views/pages/users/⚡create.blade.php');
+        $file    = base_path('resources/views/pages/users/⚡create.blade.php');
         $content = File::get($file);
 
         if (str_contains($content, '$kerberos')) {
@@ -196,7 +170,7 @@ class InstallCommand extends Command
 
     protected function configureUsersEdit(): void
     {
-        $file = base_path('resources/views/pages/users/⚡edit.blade.php');
+        $file    = base_path('resources/views/pages/users/⚡edit.blade.php');
         $content = File::get($file);
 
         if (str_contains($content, '$kerberos')) {
@@ -220,7 +194,7 @@ class InstallCommand extends Command
 
     protected function configureMfcUsersIndex(): void
     {
-        $file = base_path('resources/views/pages/mfc-users/⚡index/index.php');
+        $file    = base_path('resources/views/pages/mfc-users/⚡index/index.php');
         $content = File::get($file);
 
         if (str_contains($content, "'kerberos'")) {
@@ -238,7 +212,7 @@ class InstallCommand extends Command
 
     protected function configureMfcUsersCreate(): void
     {
-        $phpFile = base_path('resources/views/pages/mfc-users/⚡create/create.php');
+        $phpFile    = base_path('resources/views/pages/mfc-users/⚡create/create.php');
         $phpContent = File::get($phpFile);
 
         if (! str_contains($phpContent, '$kerberos')) {
@@ -251,7 +225,7 @@ class InstallCommand extends Command
             File::put($phpFile, $phpContent);
         }
 
-        $bladeFile = base_path('resources/views/pages/mfc-users/⚡create/create.blade.php');
+        $bladeFile    = base_path('resources/views/pages/mfc-users/⚡create/create.blade.php');
         $bladeContent = File::get($bladeFile);
 
         if (! str_contains($bladeContent, 'wire:model="kerberos"')) {
@@ -267,7 +241,7 @@ class InstallCommand extends Command
 
     protected function configureMfcUsersEdit(): void
     {
-        $phpFile = base_path('resources/views/pages/mfc-users/⚡edit/edit.php');
+        $phpFile    = base_path('resources/views/pages/mfc-users/⚡edit/edit.php');
         $phpContent = File::get($phpFile);
 
         if (! str_contains($phpContent, '$kerberos')) {
@@ -280,7 +254,7 @@ class InstallCommand extends Command
             File::put($phpFile, $phpContent);
         }
 
-        $bladeFile = base_path('resources/views/pages/mfc-users/⚡edit/edit.blade.php');
+        $bladeFile    = base_path('resources/views/pages/mfc-users/⚡edit/edit.blade.php');
         $bladeContent = File::get($bladeFile);
 
         if (! str_contains($bladeContent, 'wire:model="kerberos"')) {
@@ -292,51 +266,5 @@ class InstallCommand extends Command
 
             File::put($bladeFile, $bladeContent);
         }
-    }
-
-    protected function configureRoutes(): void
-    {
-        $routesFile = base_path('routes/web.php');
-
-        $kerberosRoutes = "\n\n// Routes d'authentification Kerberos\nRoute::middleware('guest')->group(function (): void {\n    Route::get('/demande-acces', \\App\\Livewire\\Auth\\RequestAccess::class)->name('access-request.create');\n    Route::get('/acces-refuse', \\App\\Livewire\\Auth\\AccessDenied::class)->name('access-denied');\n});\n";
-
-        File::append($routesFile, $kerberosRoutes);
-    }
-
-    protected function configureScheduler(): void
-    {
-        $consoleFile = base_path('routes/console.php');
-
-        $schedulerEntry = "\n\\Illuminate\\Support\\Facades\\Schedule::command('kerberos:purge-attempts')->dailyAt('03:00');\n";
-
-        File::append($consoleFile, $schedulerEntry);
-    }
-
-    protected function appendEnvVariables(): void
-    {
-        $envFile = base_path('.env');
-
-        if (! File::exists($envFile)) {
-            return;
-        }
-
-        $envBlock = "\n# Kerberos Authentication\n".
-            "KERBEROS_ENABLED=false\n".
-            "KERBEROS_SERVER_VAR=REMOTE_USER\n".
-            "KERBEROS_FALLBACK_AUTH=true\n".
-            "KERBEROS_SIMULATION_MODE=false\n".
-            "KERBEROS_ADMIN_EMAILS=\n".
-            "KERBEROS_ADMIN_NOTIFICATION_MODE=immediate\n".
-            "KERBEROS_AUTO_CLEANUP_DAYS=30\n".
-            "KERBEROS_ALLOWED_DOMAINS=\n";
-
-        File::append($envFile, $envBlock);
-    }
-
-    protected function runKerberosMigrations(): void
-    {
-        $this->call('migrate', ['--force' => true]);
-        $this->call('db:seed', ['--class' => 'Database\\Seeders\\RolesSeeder', '--force' => true]);
-        $this->call('db:seed', ['--class' => 'Database\\Seeders\\KerberosSetupSeeder', '--force' => true]);
     }
 }
