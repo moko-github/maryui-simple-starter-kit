@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e2874e73163eef0e011d0b39dfd3b444",
+    "content-hash": "78a46641e51646b95f53c4c685941350",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -2771,22 +2771,29 @@
         },
         {
             "name": "moko-github/kerberos-auth",
-            "version": "v1.0.1",
+            "version": "v2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/moko-github/kerberos-auth.git",
-                "reference": "6afda385549373212fab7f4275b5da6a456ca7ac"
+                "reference": "900f73a40085f5ee681c1cf8237736698d5e1a22"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/moko-github/kerberos-auth/zipball/6afda385549373212fab7f4275b5da6a456ca7ac",
-                "reference": "6afda385549373212fab7f4275b5da6a456ca7ac",
+                "url": "https://api.github.com/repos/moko-github/kerberos-auth/zipball/900f73a40085f5ee681c1cf8237736698d5e1a22",
+                "reference": "900f73a40085f5ee681c1cf8237736698d5e1a22",
                 "shasum": ""
             },
             "require": {
                 "laravel/framework": "^12.0",
                 "livewire/livewire": "^3.0|^4.0",
                 "php": "^8.2"
+            },
+            "require-dev": {
+                "larastan/larastan": "^3.0",
+                "laravel/pint": "^1.18",
+                "orchestra/testbench": "^10.0",
+                "pestphp/pest": "^3.0",
+                "pestphp/pest-plugin-laravel": "^3.0"
             },
             "type": "library",
             "extra": {
@@ -2802,15 +2809,48 @@
                     "MokoGithub\\KerberosAuth\\Database\\Seeders\\": "database/seeders/"
                 }
             },
+            "autoload-dev": {
+                "psr-4": {
+                    "MokoGithub\\KerberosAuth\\Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "vendor/bin/pest"
+                ],
+                "analyse": [
+                    "vendor/bin/phpstan analyse"
+                ],
+                "format": [
+                    "vendor/bin/pint"
+                ],
+                "format:test": [
+                    "vendor/bin/pint --test"
+                ]
+            },
             "license": [
                 "proprietary"
             ],
+            "authors": [
+                {
+                    "name": "moko-github",
+                    "homepage": "https://github.com/moko-github"
+                }
+            ],
             "description": "Kerberos SSO authentication package for Laravel (REMOTE_USER, demande d'acces, mode simulation)",
+            "keywords": [
+                "authentication",
+                "kerberos",
+                "laravel",
+                "remote-user",
+                "single-sign-on",
+                "sso"
+            ],
             "support": {
-                "source": "https://github.com/moko-github/kerberos-auth/tree/v1.0.1",
-                "issues": "https://github.com/moko-github/kerberos-auth/issues"
+                "issues": "https://github.com/moko-github/kerberos-auth/issues",
+                "source": "https://github.com/moko-github/kerberos-auth"
             },
-            "time": "2026-05-27T10:13:54+00:00"
+            "time": "2026-06-08T09:09:27+00:00"
         },
         {
             "name": "monolog/monolog",
