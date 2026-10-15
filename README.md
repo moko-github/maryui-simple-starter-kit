@@ -74,7 +74,7 @@ Ce starter kit intègre un module d'authentification unique (SSO) via Kerberos, 
 php artisan app:install
 ```
 
-L'installateur copie les fichiers nécessaires, configure le middleware et les routes, ajoute les variables d'environnement et exécute les migrations.
+Le module est fourni par le package [`moko-github/kerberos-auth`](https://github.com/moko-github/kerberos-auth). L'installateur délègue à `php artisan kerberos:install` (middleware, routes, modèle `User`, variables d'environnement, migrations), publie la configuration puis adapte les vues du starter kit (page de connexion, barre latérale, gestion des utilisateurs).
 
 ### Variables d'environnement
 
