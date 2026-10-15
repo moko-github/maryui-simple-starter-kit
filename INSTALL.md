@@ -18,16 +18,18 @@ Le programme d'installation vous posera quelques questions pour configurer les m
 
 Lors de l'installation, vous pouvez activer le support de la connexion unique (Single Sign-On) via Kerberos.
 
+Le module est fourni par le package [`moko-github/kerberos-auth`](https://github.com/moko-github/kerberos-auth), déjà inclus dans les dépendances du starter kit. Aucun fichier source Kerberos n'est copié dans votre application.
+
 **Ce que fait l'installateur automatiquement :**
 
-- Copie les fichiers du module Kerberos (modèles, services, middleware, composants Livewire, migrations)
-- Enregistre le middleware `KerberosAuthentication` dans `bootstrap/app.php`
-- Ajoute les champs `kerberos` et `role_id` au modèle `User`
-- Injecte le widget de simulation dans la page de connexion
-- Ajoute les routes Kerberos (`/demande-acces`, `/acces-refuse`)
-- Planifie le nettoyage quotidien des journaux d'authentification
-- Ajoute les variables Kerberos dans votre fichier `.env`
-- Exécute les migrations et initialise la table des rôles (`Admin`, `User`)
+- Lance `php artisan kerberos:install` (fourni par le package), qui :
+  - enregistre le middleware Kerberos et ajoute les routes (`/demande-acces`, `/acces-refuse`)
+  - adapte le modèle `User` (champs `kerberos` et `role_id`)
+  - ajoute les variables Kerberos dans votre fichier `.env`
+  - exécute les migrations et initialise la table des rôles (`Admin`, `User`)
+- Publie la configuration `config/kerberos.php` et y définit le layout `layouts.auth`
+- Injecte le widget de simulation dans la page de connexion et le bandeau de simulation dans la barre latérale
+- Ajoute le champ `Kerberos` aux écrans de gestion des utilisateurs (liste, création, édition)
 
 **Après l'installation, configurez votre `.env` :**
 
